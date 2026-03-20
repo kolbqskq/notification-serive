@@ -27,14 +27,9 @@ type NotificationRecord struct {
 	ErrorMessage  *string
 }
 
-func NewNotificationRecord(userID uuid.UUID, t string, message string, source string) (*NotificationRecord, error) {
+func NewNotificationRecord(id uuid.UUID, userID uuid.UUID, t string, message string, source string, createdAt time.Time) (*NotificationRecord, error) {
 	if message == "" {
 		return nil, errs.ErrEmptyMessage
-	}
-
-	id, err := uuid.NewV7()
-	if err != nil {
-		return nil, err
 	}
 
 	return &NotificationRecord{

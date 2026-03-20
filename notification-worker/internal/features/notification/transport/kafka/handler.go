@@ -35,7 +35,7 @@ func (h *NotificationHandler) Handle(ctx context.Context, event events.Notificat
 			return err
 		}
 
-		record, err := domain.NewNotificationRecord(payload.UserID, event.Type, payload.Message, event.SourceService)
+		record, err := domain.NewNotificationRecord(event.ID, payload.UserID, event.Type, payload.Message, event.SourceService, event.CreatedAt)
 		if err != nil {
 			return err
 		}
