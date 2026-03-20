@@ -42,13 +42,23 @@ func NewAddrConfig() *RedisConfig {
 
 type KafkaConfig struct {
 	Brokers []string
-	Topic string
+	Topic   string
 }
 
 func NewKafkaConfig() *KafkaConfig {
 	return &KafkaConfig{
 		Brokers: getStringSlice("KAFKA_BROKERS"),
-		Topic: getRequiredString("KAFKA_TOPIC"),
+		Topic:   getRequiredString("KAFKA_TOPIC"),
+	}
+}
+
+type HistoryServiceConfig struct {
+	Addr string
+}
+
+func NewHistoryServiceConfig() *HistoryServiceConfig {
+	return &HistoryServiceConfig{
+		Addr: getRequiredString("HISTORY_ADDR"),
 	}
 }
 

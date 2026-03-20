@@ -9,7 +9,7 @@ import (
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/events"
 )
 
-func (s *NotificationService) SendNotification(ctx context.Context, n *domain.Notification) error {
+func (s *NotificationService) SendNotification(ctx context.Context, n *domain.Notification) (uuid.UUID, error) {
 	payload := events.NotificationCreatedPayload{
 		UserID:  n.UserID,
 		Message: n.Message,
@@ -17,7 +17,7 @@ func (s *NotificationService) SendNotification(ctx context.Context, n *domain.No
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return err
+		return uuid.Nil, err
 	}
 
 	event := events.NotificationEvent{
@@ -29,5 +29,5 @@ func (s *NotificationService) SendNotification(ctx context.Context, n *domain.No
 		CreatedAt:     time.Now(),
 	}
 
-	return s.producer.Publish(ctx, n.UserID.String(), event)
+	return id, s.producer.Publish(ctx, n.UserID.String(), event)
 }

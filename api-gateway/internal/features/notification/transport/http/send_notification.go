@@ -34,10 +34,14 @@ func (h *NotificationHandler) sendNotification(c *gin.Context) {
 		return
 	}
 
-	if err := h.notificationService.SendNotification(c.Request.Context(), notification); err != nil {
+	id, err := h.notificationService.SendNotification(c.Request.Context(), notification)
+	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.Status(http.StatusAccepted)
+	c.JSON(http.StatusAccepted, gin.H{
+		"status": "queued",
+		"id":     id,
+	})
 }

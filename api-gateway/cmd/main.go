@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/config"
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/logger"
+	transport_grpc "github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/grpc"
 	transport_kafka "github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/kafka"
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/middleware"
 	notification_service "github.com/kolbqskq/notification-service/api-gateway/internal/features/notification/service"
@@ -26,6 +27,7 @@ func main() {
 	kafkaConfig := config.NewKafkaConfig()
 	serviceConfig := config.NewServiceConfig()
 	appConfig := config.NewAppConfig()
+	historyServiceConfig := config.NewHistoryServiceConfig()
 
 	//Logger:
 	logger := logger.NewLogger(loggerConfig)
@@ -48,11 +50,19 @@ func main() {
 	//Services:
 	notificationService := notification_service.NewNotificationService(kafkaProducer, serviceConfig.Name)
 
+	//HistoryClient:
+	historyClient, conn, err := transport_grpc.NewHistoryClient(historyServiceConfig.Addr)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("failed to connect history service")
+	}
+	defer conn.Close()
+
 	//Handlers:
 
 	notification_http.NewNotificationHandler(notification_http.NotificationHandlerDeps{
 		Router:              app,
 		NotificationService: notificationService,
+		HistoryClient:       historyClient,
 	})
 
 	server := &http.Server{
