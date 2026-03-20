@@ -1,4 +1,4 @@
-package producer
+package transport_kafka
 
 import (
 	"context"
@@ -37,8 +37,8 @@ func (k *KafkaProducer) Publish(ctx context.Context, key string, v any) error {
 	}
 
 	return k.writer.WriteMessages(ctx, kafka.Message{
-		Value: data,
-		Key:   []byte(key),
+		Value:   data,
+		Key:     []byte(key),
 	})
 }
 
