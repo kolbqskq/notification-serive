@@ -1,4 +1,4 @@
 /.env
 .env.shared
 **/.env
-out
+out.env.docker
