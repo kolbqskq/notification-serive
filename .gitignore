@@ -2,3 +2,5 @@
 .env.shared
 **/.env
 out.env.docker
+.env.docker
+.env.docker
