@@ -1,4 +1,3 @@
--- +goose Up
 CREATE TABLE notifications (
     ID UUID PRIMARY KEY,
     user_id UUID NOT NULL,
@@ -10,6 +9,3 @@ CREATE TABLE notifications (
     sent_at TIMESTAMPTZ,
     error_message VARCHAR(100)
 );
-
--- +goose Down
-DROP TABLE notifications;
