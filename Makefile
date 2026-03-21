@@ -1,5 +1,55 @@
-include .env.shared
+include .env
 export
 
+export PROJECT_ROOT=$(shell pwd)
+
+env-up:
+	@docker compose up -d postgres
+
+
+env-down:
+	@docker compose down -d postgres
+
+
+env-cleanup:
+	@read -p "Очистить все volume файлы окружения? Опасность потери данных. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		docker compose down postgres && \
+		rm -rf out/pgdata && \
+		echo "Файлы окружения очищены"; \
+	else \
+		echo "Очистка окружения отменена"; \
+	fi
+
+env-port-forward:
+	@docker compose up -d port-forwarder
+
+env-port-close:
+	@docker compose down -d port-forwarder
+
+migrate-create:
+	@if [ -z "$(seq)" ]; then \
+		echo "Отсутствует необходимый параметр seq. Пример make migrate-create seq=init"; \
+		exit 1; \
+	fi;
+	docker compose run --rm postgres-migrate \
+		create \
+		-ext sql \
+		-dir /migrations \
+		-seq "$(seq)"
+
 migrate-up:
-	go run github.com/pressly/goose/v3/cmd/goose@latest -dir migrations postgres ${DATABASE_URL} up
+	@make migrate-action action=up
+
+migrate-down:
+	@make migrate-action action=down
+
+migrate-action:
+	@if [ -z "$(action)" ]; then \
+		echo "Отсутствует необходимый параметр action. Пример make migrate-action action=down"; \
+		exit 1; \
+	fi;
+	@docker compose run --rm postgres-migrate \
+		-path /migrations \
+		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable \
+		"$(action)"

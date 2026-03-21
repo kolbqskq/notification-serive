@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/google/uuid"
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/errs"
 	"github.com/redis/go-redis/v9"
 )
@@ -17,6 +18,11 @@ func RateLimit(rdb *redis.Client) gin.HandlerFunc {
 
 		if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 			c.Error(err)
+			c.Abort()
+			return
+		}
+		if _, err := uuid.Parse(req.UserID); err != nil {
+			c.Error(errs.ErrInvalidUserID)
 			c.Abort()
 			return
 		}
