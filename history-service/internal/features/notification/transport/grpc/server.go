@@ -2,6 +2,7 @@ package transport_grpc
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/kolbqskq/notification-service/history-service/internal/core/domain"
@@ -38,6 +39,7 @@ func toGRPCError(err error) error {
 	case errs.ErrInvalidID:
 		return status.Error(codes.InvalidArgument, err.Error())
 	default:
+		fmt.Printf("unknown error: %v\n", err)
 		return status.Error(codes.Internal, "internal error")
 	}
 }
