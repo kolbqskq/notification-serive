@@ -1,6 +1,10 @@
 package notification_service
 
-import "context"
+import (
+	"context"
+
+	"github.com/rs/zerolog"
+)
 
 type Producer interface {
 	Publish(ctx context.Context, key string, v any) error
@@ -9,11 +13,19 @@ type Producer interface {
 type NotificationService struct {
 	producer    Producer
 	serviceName string
+	logger      zerolog.Logger
 }
 
-func NewNotificationService(producer Producer, serviceName string) *NotificationService {
+type NotificationServiceDeps struct {
+	Producer    Producer
+	ServiceName string
+	Logger      zerolog.Logger
+}
+
+func NewNotificationService(deps NotificationServiceDeps) *NotificationService {
 	return &NotificationService{
-		producer:    producer,
-		serviceName: serviceName,
+		producer:    deps.Producer,
+		serviceName: deps.ServiceName,
+		logger:      deps.Logger,
 	}
 }

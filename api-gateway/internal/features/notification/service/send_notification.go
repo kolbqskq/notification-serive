@@ -28,6 +28,9 @@ func (s *NotificationService) SendNotification(ctx context.Context, n *domain.No
 		SourceService: s.serviceName,
 		CreatedAt:     time.Now(),
 	}
-
-	return id, s.producer.Publish(ctx, n.UserID.String(), event)
+	if err := s.producer.Publish(ctx, n.UserID.String(), event); err != nil {
+		return uuid.Nil, err
+	}
+	s.logger.Info().Str("user_id", n.UserID.String()).Str("notification_id", event.ID.String()).Msg("notification sent")
+	return id, nil
 }

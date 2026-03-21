@@ -27,10 +27,14 @@ var errToHTTP = map[error]*HTTPError{
 }
 
 func ToHTTPError(err error) *HTTPError {
-
-	httpErr, ok := errToHTTP[err]
-	if ok {
-		return httpErr
+	switch {
+	case errors.Is(err, ErrEmptyMessage):
+		return &HTTPError{Code: http.StatusBadRequest, Message: "empty message"}
+	case errors.Is(err, ErrInvalidUserID):
+		return &HTTPError{Code: http.StatusBadRequest, Message: "invalid user_id"}
+	case errors.Is(err, ErrTooManyRequests):
+		return &HTTPError{Code: http.StatusTooManyRequests, Message: "too many requests"}
+	default:
+		return &HTTPError{Code: http.StatusInternalServerError, Message: "internal server error"}
 	}
-	return &HTTPError{Code: http.StatusInternalServerError, Message: "internal server error"}
 }

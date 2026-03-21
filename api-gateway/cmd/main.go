@@ -38,7 +38,10 @@ func main() {
 	defer rdb.Close()
 
 	//Producers:
-	kafkaProducer := transport_kafka.NewKafkaProducer(kafkaConfig.Brokers, kafkaConfig.Topic)
+	kafkaProducer := transport_kafka.NewKafkaProducer(transport_kafka.KafkaProducerDeps{
+		Topic:   kafkaConfig.Topic,
+		Brokers: kafkaConfig.Brokers,
+	})
 	defer kafkaProducer.Close()
 
 	app := gin.New()
@@ -48,7 +51,11 @@ func main() {
 	app.Use(middleware.RateLimit(rdb))
 
 	//Services:
-	notificationService := notification_service.NewNotificationService(kafkaProducer, serviceConfig.Name)
+	notificationService := notification_service.NewNotificationService(notification_service.NotificationServiceDeps{
+		Producer:    kafkaProducer,
+		ServiceName: serviceConfig.Name,
+		Logger:      *logger,
+	})
 
 	//HistoryClient:
 	historyClient, conn, err := transport_grpc.NewHistoryClient(historyServiceConfig.Addr)

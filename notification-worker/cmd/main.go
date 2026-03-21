@@ -48,6 +48,7 @@ func main() {
 	notificationService := notification_service.NewNotificationService(notification_service.NotificationServiceDeps{
 		NotificationRepository: notificationRepository,
 		TelegramSender:         telegramClient,
+		Logger:                 *logger,
 	})
 
 	//Handler:

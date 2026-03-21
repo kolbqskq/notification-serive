@@ -50,6 +50,7 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 
 		msg, err := k.reader.FetchMessage(ctx)
 		if err != nil {
+			k.logger.Error().Err(err).Msg("fetch message error")
 			select {
 			case <-time.After(time.Second):
 			case <-ctx.Done():

@@ -2,6 +2,8 @@ package transport_telegram
 
 import (
 	"context"
+	"net/http"
+	"time"
 
 	"github.com/go-telegram/bot"
 )
@@ -17,13 +19,18 @@ type TelegramClientDeps struct {
 }
 
 func NewTelegramClient(deps TelegramClientDeps) (*TelegramClient, error) {
-	bot, err := bot.New(deps.Token)
+
+	httpClient := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	b, err := bot.New(deps.Token, bot.WithHTTPClient(5*time.Second, httpClient))
 	if err != nil {
 		return nil, err
 	}
 
 	return &TelegramClient{
-		bot:    bot,
+		bot:    b,
 		chatID: deps.ChatID,
 	}, nil
 }

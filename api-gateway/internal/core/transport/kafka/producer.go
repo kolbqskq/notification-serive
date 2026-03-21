@@ -12,10 +12,15 @@ type KafkaProducer struct {
 	writer *kafka.Writer
 }
 
-func NewKafkaProducer(brokers []string, topic string) *KafkaProducer {
+type KafkaProducerDeps struct {
+	Topic   string
+	Brokers []string
+}
+
+func NewKafkaProducer(deps KafkaProducerDeps) *KafkaProducer {
 	writer := &kafka.Writer{
-		Addr:         kafka.TCP(brokers...),
-		Topic:        topic,
+		Addr:         kafka.TCP(deps.Brokers...),
+		Topic:        deps.Topic,
 		Balancer:     &kafka.Hash{},
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
@@ -37,8 +42,8 @@ func (k *KafkaProducer) Publish(ctx context.Context, key string, v any) error {
 	}
 
 	return k.writer.WriteMessages(ctx, kafka.Message{
-		Value:   data,
-		Key:     []byte(key),
+		Value: data,
+		Key:   []byte(key),
 	})
 }
 

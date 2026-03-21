@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kolbqskq/notification-service/notification-worker/internal/core/domain"
+	"github.com/rs/zerolog"
 )
 
 type NotificationRepository interface {
@@ -18,15 +19,18 @@ type TelegramSender interface {
 type NotificationService struct {
 	notificationRepository NotificationRepository
 	telegramSender         TelegramSender
+	logger                 zerolog.Logger
 }
 type NotificationServiceDeps struct {
 	NotificationRepository NotificationRepository
 	TelegramSender         TelegramSender
+	Logger                 zerolog.Logger
 }
 
 func NewNotificationService(deps NotificationServiceDeps) *NotificationService {
 	return &NotificationService{
 		notificationRepository: deps.NotificationRepository,
-		telegramSender: deps.TelegramSender,
+		telegramSender:         deps.TelegramSender,
+		logger:                 deps.Logger,
 	}
 }

@@ -17,7 +17,11 @@ func (s *NotificationService) HandleNotification(ctx context.Context, n *domain.
 		return err
 	}
 	n.MarkSend()
-	return s.notificationRepository.UpdateStatus(ctx, n)
+	if err := s.notificationRepository.UpdateStatus(ctx, n); err != nil {
+		return err
+	}
+	s.logger.Info().Str("user_id", n.UserID.String()).Str("notification_id", n.ID.String()).Msg("notification_sent")
+	return nil
 }
 
 func (s *NotificationService) sendWithRetry(ctx context.Context, userID, message string) error {
