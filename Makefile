@@ -3,12 +3,16 @@ export
 
 export PROJECT_ROOT=$(shell pwd)
 
-env-up:
-	@docker compose up -d postgres
+init:
+	@mkdir -p $(PROJECT_ROOT)/out/kafka_data
+	mkdir -p $(PROJECT_ROOT)/out/pgdata
+	mkdir -p $(PROJECT_ROOT)/out/logs
 
+env-up: init
+	@docker compose up -d
 
 env-down:
-	@docker compose down -d postgres
+	@docker compose down
 
 
 env-cleanup:
@@ -23,7 +27,7 @@ env-cleanup:
 
 env-port-forward:
 	@docker compose up -d port-forwarder
-
+	
 env-port-close:
 	@docker compose down -d port-forwarder
 

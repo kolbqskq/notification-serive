@@ -41,6 +41,8 @@ func NewKafkaConsumer(deps KafkaConsumerDeps) *KafkaConsumer {
 }
 
 func (k *KafkaConsumer) Run(ctx context.Context) error {
+	k.logger.Info().Msg("consumer started")
+
 	for {
 		if ctx.Err() != nil {
 			return ctx.Err()

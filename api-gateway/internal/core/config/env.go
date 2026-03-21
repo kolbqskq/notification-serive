@@ -78,7 +78,7 @@ type AppConfig struct {
 
 func NewAppConfig() *AppConfig {
 	return &AppConfig{
-		Addr: getString("APP_ADDR", ":8081"),
+		Addr: getString("HTTP_ADDR", ":8081"),
 	}
 }
 

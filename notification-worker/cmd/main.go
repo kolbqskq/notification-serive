@@ -64,6 +64,8 @@ func main() {
 		Logger:  *logger,
 	})
 
+	logger.Info().Strs("brokers", kafkaConfig.Brokers).Str("topic", kafkaConfig.Topic).Msg("consumer created")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

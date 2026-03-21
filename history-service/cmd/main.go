@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net"
 	"os"
 	"os/signal"
@@ -46,7 +47,15 @@ func main() {
 	})
 
 	//gRPC server:
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+			resp, err = handler(ctx, req)
+			if err != nil {
+				logger.Error().Err(err).Str("method", info.FullMethod).Msg("gRPC handler error")
+			}
+			return resp, err
+		}),
+	)
 	pb.RegisterHistoryServiceServer(grpcServer, notificationServer)
 	reflection.Register(grpcServer)
 
