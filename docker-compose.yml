@@ -40,6 +40,8 @@ services:
     restart: always
 
   postgres-migrate:
+    profiles:
+      - tools
     image: migrate/migrate:v4.19.1
     volumes:
       - ${PROJECT_ROOT}/migrations:/migrations
@@ -52,6 +54,8 @@ services:
       - "127.0.0.1:5432:5432"
 
   swagger:
+    profiles:
+      - tools
     build:
       context: ${PROJECT_ROOT}
       dockerfile_inline: |
@@ -74,8 +78,6 @@ services:
       - ${PROJECT_ROOT}/history-service/.env
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
-    depends_on:
-      - postgres
     restart: always
 
   api-gateway:
@@ -91,10 +93,6 @@ services:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
     ports:
       - "8081:8081"
-    depends_on:
-      - postgres
-      - kafka
-      - redis
     restart: always
 
   notification-worker:
@@ -108,7 +106,4 @@ services:
       - ${PROJECT_ROOT}/notification-worker/.env
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
-    depends_on:
-      - kafka
-      - postgres
     restart: always

@@ -15,6 +15,26 @@ type SendNotificationRequest struct {
 	Message string `json:"message" binding:"required"`
 }
 
+type SendNotificationResponse struct {
+	NotificationID string `json:"id"`
+	Status         string `json:"status"`
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+// @Summary      Отправить уведомление
+// @Description  Принимает запрос и публикует событие в Kafka
+// @Tags         notifications
+// @Accept       json
+// @Produce      json
+// @Param        request body SendNotificationRequest true "SendNotification тело запроса"
+// @Success      202  {object} SendNotificationResponse
+// @Failure      400  {object}  ErrorResponse "Bad request"
+// @Failure      429  {object}  ErrorResponse "Too many requests"
+// @Failure      500  {object}  ErrorResponse "Internal server error"
+// @Router       /notifications [post]
 func (h *NotificationHandler) sendNotification(c *gin.Context) {
 	var req SendNotificationRequest
 
@@ -40,8 +60,8 @@ func (h *NotificationHandler) sendNotification(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{
-		"status": "queued",
-		"id":     id,
+	c.JSON(http.StatusAccepted, SendNotificationResponse{
+		NotificationID: id.String(),
+		Status:         "queued",
 	})
 }

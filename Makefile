@@ -4,21 +4,19 @@ export
 export PROJECT_ROOT=$(shell pwd)
 
 init:
-	@mkdir -p $(PROJECT_ROOT)/out/kafka_data
-	mkdir -p $(PROJECT_ROOT)/out/pgdata
-	mkdir -p $(PROJECT_ROOT)/out/logs
+	@mkdir -p $(PROJECT_ROOT)/out/pgdata
 
 env-up: init
-	@docker compose up -d
+	@docker compose up postgres redis kafka ui -d 
 
 env-down:
-	@docker compose down
+	@docker compose down postgres redis kafka ui
 
 
 env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность потери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
-		docker compose down postgres && \
+		docker compose down postgres redis kafka ui && \
 		sudo rm -rf out/pgdata && \
 		echo "Файлы окружения очищены"; \
 	else \
@@ -31,12 +29,13 @@ env-port-forward:
 env-port-close:
 	@docker compose down -d port-forwarder
 
+
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
 		echo "Отсутствует необходимый параметр seq. Пример make migrate-create seq=init"; \
 		exit 1; \
 	fi;
-	docker compose run --rm postgres-migrate \
+	docker compose --profile tools run --rm postgres-migrate \
 		create \
 		-ext sql \
 		-dir /migrations \
@@ -53,7 +52,30 @@ migrate-action:
 		echo "Отсутствует необходимый параметр action. Пример make migrate-action action=down"; \
 		exit 1; \
 	fi;
-	@docker compose run --rm postgres-migrate \
+	@docker compose --profile tools run --rm postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
+
+services-up:
+	@docker-compose up api-gateway notification-worker history-service -d
+
+services-down:
+	@docker-compose down api-gateway notification-worker history-service
+
+
+services-rebuild:
+	@docker-compose build --no-cache api-gateway notification-worker history-service
+
+swagger-gen:
+	@docker compose --profile tools run --rm swagger \
+		init \
+		-g api-gateway/cmd/main.go \
+		-o api-gateway/docs \
+		--parseInternal \
+		--parseDependency
+
+ps:
+	@docker compose ps
+
+
