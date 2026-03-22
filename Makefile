@@ -27,7 +27,7 @@ env-port-forward:
 	@docker compose up -d port-forwarder
 	
 env-port-close:
-	@docker compose down -d port-forwarder
+	@docker compose down  port-forwarder
 
 
 migrate-create:
