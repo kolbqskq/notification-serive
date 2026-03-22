@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,12 +13,23 @@ import (
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/config"
 	"github.com/kolbqskq/notification-service/api-gateway/internal/core/logger"
 	transport_grpc "github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/grpc"
+	"github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/http/middleware"
 	transport_kafka "github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/kafka"
-	"github.com/kolbqskq/notification-service/api-gateway/internal/core/transport/middleware"
 	notification_service "github.com/kolbqskq/notification-service/api-gateway/internal/features/notification/service"
 	notification_http "github.com/kolbqskq/notification-service/api-gateway/internal/features/notification/transport/http"
 	"github.com/redis/go-redis/v9"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/swag"
+
+	_ "github.com/kolbqskq/notification-service/api-gateway/docs"
 )
+
+// @title           Notification Service API
+// @version         1.0
+// @description     Микросервис уведомлений
+// @host            localhost:8081
+// @BasePath        /api/v1
 
 func main() {
 	//Configs:
@@ -47,6 +59,9 @@ func main() {
 	app := gin.New()
 	app.Use(gin.Recovery())
 	app.SetTrustedProxies(nil)
+	app.Use(middleware.CORS())
+	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.URL("/swagger/doc.json")))
+
 	app.Use(middleware.ErrorMiddleware(*logger))
 	app.Use(middleware.RateLimit(rdb))
 
@@ -76,7 +91,7 @@ func main() {
 		Addr:    appConfig.Addr,
 		Handler: app,
 	}
-
+	fmt.Println(swag.GetSwagger("swagger"))
 	go func() {
 		logger.Info().Str("addr", server.Addr).Msg("server started")
 

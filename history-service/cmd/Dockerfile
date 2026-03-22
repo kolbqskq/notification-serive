@@ -15,4 +15,5 @@ RUN CGO_ENABLED=0 go build -o /app/bin/history-service ./cmd
 FROM alpine:3.23
 WORKDIR /app
 COPY --from=builder /app/bin/history-service ./history-service
+ENV PROJECT_ROOT=/app
 CMD ["./history-service"]

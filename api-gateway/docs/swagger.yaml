@@ -1,0 +1,167 @@
+basePath: /api/v1
+definitions:
+  api-gateway_internal_features_notification_transport_http.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  api-gateway_internal_features_notification_transport_http.GetHistoryResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.NotificationRecordResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  api-gateway_internal_features_notification_transport_http.GetStatusResponse:
+    properties:
+      error_message:
+        type: string
+      sent_at:
+        type: string
+      status:
+        type: string
+    type: object
+  api-gateway_internal_features_notification_transport_http.NotificationRecordResponse:
+    properties:
+      created_at:
+        type: string
+      error_message:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      sent_at:
+        type: string
+      source_service:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  api-gateway_internal_features_notification_transport_http.SendNotificationRequest:
+    properties:
+      message:
+        type: string
+      user_id:
+        type: string
+    required:
+    - message
+    - user_id
+    type: object
+  api-gateway_internal_features_notification_transport_http.SendNotificationResponse:
+    properties:
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: Микросервис уведомлений
+  title: Notification Service API
+  version: "1.0"
+paths:
+  /notifications:
+    post:
+      consumes:
+      - application/json
+      description: Принимает запрос и публикует событие в Kafka
+      parameters:
+      - description: SendNotification тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.SendNotificationRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.SendNotificationResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+        "429":
+          description: Too many requests
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+      summary: Отправить уведомление
+      tags:
+      - notifications
+  /notifications/{id}:
+    get:
+      description: Делает запрос в history-service по id
+      parameters:
+      - description: ID уведомления
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.GetStatusResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+      summary: Получить статус уведомления
+      tags:
+      - notifications
+  /notifications/history:
+    get:
+      description: Возвращает историю уведомлений пользователя
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Количество записей (по умолчанию 10)
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.GetHistoryResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/api-gateway_internal_features_notification_transport_http.ErrorResponse'
+      summary: История уведомлений
+      tags:
+      - notifications
+swagger: "2.0"
