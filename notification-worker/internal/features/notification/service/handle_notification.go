@@ -11,7 +11,7 @@ func (s *NotificationService) HandleNotification(ctx context.Context, n *domain.
 	if err := s.notificationRepository.Create(ctx, n); err != nil {
 		return err
 	}
-	if err := s.sendWithRetry(ctx, n.UserID.String(), n.Message); err != nil {
+	if err := s.telegramSendWithRetry(ctx, n.UserID.String(), n.Message); err != nil {
 		n.MarkFailed(err.Error())
 		s.notificationRepository.UpdateStatus(ctx, n)
 		return err
@@ -24,14 +24,14 @@ func (s *NotificationService) HandleNotification(ctx context.Context, n *domain.
 	return nil
 }
 
-func (s *NotificationService) sendWithRetry(ctx context.Context, userID, message string) error {
+func (s *NotificationService) telegramSendWithRetry(ctx context.Context, userID, message string) error {
 	var err error
 	for range 3 {
 		err = s.telegramSender.Send(ctx, userID, message)
 		if err == nil {
 			return nil
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 2)
 	}
-	return nil
+	return err
 }

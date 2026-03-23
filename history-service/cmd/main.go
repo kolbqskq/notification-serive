@@ -44,6 +44,7 @@ func main() {
 	//notification server:
 	notificationServer := transport_grpc.NewServer(transport_grpc.ServerDeps{
 		NotificationService: notificationService,
+		Logger: *logger,
 	})
 
 	//gRPC server:

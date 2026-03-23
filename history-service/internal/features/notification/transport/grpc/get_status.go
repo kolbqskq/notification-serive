@@ -11,12 +11,12 @@ import (
 func (s *Server) GetStatus(ctx context.Context, req *pb.GetStatusRequest) (*pb.GetStatusResponse, error) {
 	id, err := uuid.Parse(req.NotificationId)
 	if err != nil {
-		return nil, toGRPCError(err)
+		return nil, s.toGRPCError(err)
 	}
 
 	record, err := s.notificationService.GetStatus(ctx, id)
 	if err != nil {
-		return nil, toGRPCError(err)
+		return nil, s.toGRPCError(err)
 	}
 
 	res := &pb.GetStatusResponse{

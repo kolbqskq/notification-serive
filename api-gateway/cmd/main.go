@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,7 +19,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag"
 
 	_ "github.com/kolbqskq/notification-service/api-gateway/docs"
 )
@@ -91,7 +89,6 @@ func main() {
 		Addr:    appConfig.Addr,
 		Handler: app,
 	}
-	fmt.Println(swag.GetSwagger("swagger"))
 	go func() {
 		logger.Info().Str("addr", server.Addr).Msg("server started")
 
