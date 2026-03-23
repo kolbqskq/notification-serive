@@ -16,11 +16,11 @@
 - **PostgreSQL**
 - **Docker**
 - **[gin](https://github.com/gin-gonic/gin)**
-- **[kafka-go](github.com/segmentio/kafka-go)**
+- **[kafka-go](https://github.com/segmentio/kafka-go)**
 - **[go-redis](https://github.com/redis/go-redis)**
 - **[pgx](https://github.com/jackc/pgx)**
 - **[grpc-go](https://github.com/grpc/grpc-go)**
-- **[go-telegram](github.com/go-telegram/bot)**
+- **[go-telegram](https://github.com/go-telegram/bot)**
 - **[zerolog](https://github.com/rs/zerolog)**
 - **[golang-migrate](https://github.com/golang-migrate/migrate)**
 - **[swaggo/swag](https://github.com/swaggo/swag)**

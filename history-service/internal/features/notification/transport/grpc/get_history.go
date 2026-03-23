@@ -12,12 +12,12 @@ import (
 func (s *Server) GetHistory(ctx context.Context, req *pb.GetHistoryRequest) (*pb.GetHistoryResponse, error) {
 	userID, err := uuid.Parse(req.UserId)
 	if err != nil {
-		return nil, toGRPCError(err)
+		return nil, s.toGRPCError(err)
 	}
 
 	records, total, err := s.notificationService.GetHistory(ctx, userID, req.Limit, req.Offset)
 	if err != nil {
-		return nil, toGRPCError(err)
+		return nil, s.toGRPCError(err)
 	}
 
 	return &pb.GetHistoryResponse{

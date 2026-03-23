@@ -6,16 +6,19 @@ import (
 	"time"
 
 	"github.com/go-telegram/bot"
+	"github.com/rs/zerolog"
 )
 
 type TelegramClient struct {
 	bot    *bot.Bot
 	chatID int64
+	logger zerolog.Logger
 }
 
 type TelegramClientDeps struct {
 	Token  string
 	ChatID int64
+	Logger zerolog.Logger
 }
 
 func NewTelegramClient(deps TelegramClientDeps) (*TelegramClient, error) {
@@ -40,6 +43,8 @@ func (t *TelegramClient) Send(ctx context.Context, userID string, message string
 		ChatID: t.chatID,
 		Text:   message,
 	})
-
+	if err == nil {
+		t.logger.Info().Msg("notification sent")
+	}
 	return err
 }
