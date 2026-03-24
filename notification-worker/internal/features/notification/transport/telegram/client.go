@@ -35,6 +35,7 @@ func NewTelegramClient(deps TelegramClientDeps) (*TelegramClient, error) {
 	return &TelegramClient{
 		bot:    b,
 		chatID: deps.ChatID,
+		logger: deps.Logger,
 	}, nil
 }
 

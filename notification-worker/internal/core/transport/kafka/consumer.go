@@ -83,7 +83,6 @@ func (k *KafkaConsumer) processMessage(ctx context.Context, msg kafka.Message) {
 
 	if err := k.handler(handlerCtx, event); err != nil {
 		k.logger.Error().Err(err).Str("event_id", event.ID.String()).Str("type", event.Type).Msg("handler error")
-		return
 	}
 	if err := k.reader.CommitMessages(ctx, msg); err != nil {
 		k.logger.Error().Err(err).Msg("commit error")

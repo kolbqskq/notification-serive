@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/kolbqskq/notification-service/history-service/internal/core/domain"
-	"github.com/kolbqskq/notification-service/history-service/internal/core/errs"
 )
 
 func (r *NotificationRepository) GetByUserID(ctx context.Context, userID uuid.UUID, limit, offset int32) ([]*domain.NotificationRecord, int32, error) {
@@ -40,10 +39,6 @@ func (r *NotificationRepository) GetByUserID(ctx context.Context, userID uuid.UU
 			return nil, 0, err
 		}
 		res = append(res, r)
-	}
-
-	if len(res) == 0 {
-		return nil, 0, errs.ErrNotFound
 	}
 
 	query =

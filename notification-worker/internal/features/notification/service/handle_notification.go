@@ -13,7 +13,9 @@ func (s *NotificationService) HandleNotification(ctx context.Context, n *domain.
 	}
 	if err := s.telegramSendWithRetry(ctx, n.UserID.String(), n.Message); err != nil {
 		n.MarkFailed(err.Error())
-		s.notificationRepository.UpdateStatus(ctx, n)
+		if updateErr := s.notificationRepository.UpdateStatus(ctx, n); updateErr != nil {
+			return updateErr
+		}
 		return err
 	}
 	n.MarkSend()

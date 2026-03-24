@@ -34,6 +34,6 @@ func NewNotificationHandler(deps NotificationHandlerDeps) {
 
 	api := h.router.Group("/api/v1")
 	api.POST("/notifications", h.sendNotification)
-	api.GET("/notifications/:id", h.getStatus)
 	api.GET("/notifications/history", h.getHistory)
+	api.GET("/notifications/:id", h.getStatus)
 }

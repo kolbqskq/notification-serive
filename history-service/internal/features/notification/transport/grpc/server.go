@@ -31,6 +31,7 @@ type ServerDeps struct {
 func NewServer(deps ServerDeps) *Server {
 	return &Server{
 		notificationService: deps.NotificationService,
+		logger:              deps.Logger,
 	}
 }
 

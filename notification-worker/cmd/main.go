@@ -34,6 +34,7 @@ func main() {
 	telegramClient, err := transport_telegram.NewTelegramClient(transport_telegram.TelegramClientDeps{
 		Token:  telegramConfig.Token,
 		ChatID: telegramConfig.ChatID,
+		Logger: *logger,
 	})
 	if err != nil {
 		logger.Fatal().Err(err).Msg("failed create telegram client")
